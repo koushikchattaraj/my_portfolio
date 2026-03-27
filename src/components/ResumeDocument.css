@@ -1,0 +1,230 @@
+.resume-page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  background: #fff;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  padding: 28px 32px;
+  color: #1a1a2e;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+}
+
+.resume-page.pdf-capture {
+  min-height: 0;
+  margin: 0;
+  box-shadow: none;
+}
+
+.resume-header {
+  text-align: center;
+  padding-bottom: 14px;
+  border-bottom: 2.5px solid #0f3460;
+  margin-bottom: 16px;
+}
+
+.resume-header h1 {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #0f3460;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.resume-tagline {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.resume-contact {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 10px;
+  color: #444;
+}
+
+.resume-contact a {
+  color: #0f3460;
+  text-decoration: none;
+}
+
+.resume-contact .sep {
+  color: #bbb;
+}
+
+.resume-section {
+  margin-bottom: 14px;
+}
+
+.resume-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f3460;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  padding-bottom: 4px;
+  border-bottom: 1.5px solid #0f3460;
+  margin-bottom: 8px;
+}
+
+.resume-summary {
+  font-size: 9.5px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.resume-summary strong {
+  color: #1a1a2e;
+}
+
+.resume-skills {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 4px 10px;
+  font-size: 9px;
+}
+
+.resume-skills .label {
+  font-weight: 700;
+  color: #0f3460;
+  padding: 2px 0;
+}
+
+.resume-skills .value {
+  color: #333;
+  padding: 2px 0;
+  line-height: 1.5;
+}
+
+.resume-exp-block {
+  margin-bottom: 10px;
+}
+
+.resume-exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2px;
+}
+
+.resume-exp-header .company {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.resume-exp-header .dates {
+  font-size: 9px;
+  color: #555;
+  font-style: italic;
+}
+
+.resume-exp-role {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #0f3460;
+  margin-bottom: 4px;
+}
+
+.resume-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.resume-list li {
+  font-size: 9px;
+  line-height: 1.55;
+  color: #333;
+  padding-left: 12px;
+  position: relative;
+  margin-bottom: 3px;
+}
+
+.resume-list li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #0f3460;
+  font-size: 9px;
+}
+
+.resume-list li strong {
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.resume-proj-block {
+  margin-bottom: 9px;
+}
+
+.resume-proj-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 1px;
+}
+
+.resume-proj-desc {
+  font-size: 8.5px;
+  color: #555;
+  font-style: italic;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.resume-edu-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 9.5px;
+  color: #333;
+  line-height: 1.35;
+}
+
+.resume-edu-line + .resume-edu-line {
+  margin-top: 3px;
+}
+
+.resume-edu-line .edu-inst {
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.resume-edu-line .edu-dates {
+  font-size: 9px;
+  color: #555;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.resume-edu-line .edu-italic {
+  font-style: italic;
+}
+
+.resume-cert {
+  font-size: 9.5px;
+  color: #333;
+  line-height: 1.35;
+}
+
+.resume-cert strong {
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+@media print {
+  .resume-page {
+    margin: 0;
+    box-shadow: none;
+    padding: 20px 24px;
+  }
+}
