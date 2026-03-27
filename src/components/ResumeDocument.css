@@ -10,10 +10,146 @@
   font-size: 10px;
 }
 
+/*
+ * PDF capture: readable sizing (~90% of screen resume), tighter margins so one A4
+ * still fits; extra section spacing so the page doesn’t look “empty at the bottom”.
+ */
 .resume-page.pdf-capture {
+  box-sizing: border-box;
   min-height: 0;
   margin: 0;
   box-shadow: none;
+  padding: 11mm 13mm;
+  font-size: 9.5px;
+}
+
+.resume-page.pdf-capture .resume-header {
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom-width: 2px;
+}
+
+.resume-page.pdf-capture .resume-header h1 {
+  font-size: 23px;
+  letter-spacing: 0.75px;
+  margin-bottom: 3px;
+}
+
+.resume-page.pdf-capture .resume-tagline {
+  font-size: 11px;
+  letter-spacing: 0.65px;
+  margin-bottom: 6px;
+}
+
+.resume-page.pdf-capture .resume-contact {
+  font-size: 9.5px;
+  gap: 5px 14px;
+  line-height: 1.4;
+}
+
+.resume-page.pdf-capture .resume-section {
+  margin-bottom: 15px;
+}
+
+.resume-page.pdf-capture .resume-section:last-child {
+  margin-bottom: 0;
+}
+
+.resume-page.pdf-capture .resume-section-title {
+  font-size: 11px;
+  letter-spacing: 2px;
+  padding-bottom: 3px;
+  margin-bottom: 6px;
+  border-bottom-width: 1.5px;
+}
+
+.resume-page.pdf-capture .resume-summary {
+  font-size: 9px;
+  line-height: 1.52;
+}
+
+.resume-page.pdf-capture .resume-skills {
+  grid-template-columns: 98px 1fr;
+  gap: 3px 10px;
+  font-size: 8.75px;
+}
+
+.resume-page.pdf-capture .resume-skills .label,
+.resume-page.pdf-capture .resume-skills .value {
+  padding: 2px 0;
+  line-height: 1.45;
+}
+
+.resume-page.pdf-capture .resume-exp-block {
+  margin-bottom: 9px;
+}
+
+.resume-page.pdf-capture .resume-exp-block:last-child {
+  margin-bottom: 0;
+}
+
+.resume-page.pdf-capture .resume-exp-header .company {
+  font-size: 10.5px;
+}
+
+.resume-page.pdf-capture .resume-exp-header .dates {
+  font-size: 8.75px;
+}
+
+.resume-page.pdf-capture .resume-exp-role {
+  font-size: 9.25px;
+  margin-bottom: 3px;
+}
+
+.resume-page.pdf-capture .resume-list li {
+  font-size: 8.75px;
+  line-height: 1.48;
+  margin-bottom: 2.5px;
+  padding-left: 11px;
+}
+
+.resume-page.pdf-capture .resume-list li::before {
+  font-size: 8.5px;
+}
+
+.resume-page.pdf-capture .resume-proj-block {
+  margin-bottom: 8px;
+}
+
+.resume-page.pdf-capture .resume-proj-block:last-child {
+  margin-bottom: 0;
+}
+
+.resume-page.pdf-capture .resume-proj-title {
+  font-size: 9.75px;
+}
+
+.resume-page.pdf-capture .resume-proj-desc {
+  font-size: 8.25px;
+  line-height: 1.48;
+  margin-bottom: 3px;
+}
+
+.resume-page.pdf-capture .resume-edu-line {
+  font-size: 9px;
+  line-height: 1.38;
+}
+
+.resume-page.pdf-capture .resume-edu-line + .resume-edu-line {
+  margin-top: 2px;
+}
+
+.resume-page.pdf-capture .resume-edu-line .edu-dates {
+  font-size: 8.75px;
+}
+
+.resume-page.pdf-capture .resume-cert {
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.resume-page.pdf-capture .resume-cert > div + div {
+  margin-top: 2px;
 }
 
 .resume-header {

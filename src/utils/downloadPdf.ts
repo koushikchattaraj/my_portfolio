@@ -1,7 +1,14 @@
 import html2pdf from 'html2pdf.js'
 
+function waitLayout(): Promise<void> {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+  })
+}
+
 export async function downloadResumePdf(element: HTMLElement, baseFilename: string): Promise<void> {
   element.classList.add('pdf-capture')
+  await waitLayout()
   const now = new Date()
   const dateStamp = [
     now.getFullYear(),

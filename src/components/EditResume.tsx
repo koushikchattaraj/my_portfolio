@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import { useResume } from '../context/ResumeContext'
 import type { Experience, Project, SkillRow } from '../types/resume'
 import { downloadResumePdf } from '../utils/downloadPdf'
@@ -17,13 +18,48 @@ function bulletsToText(bullets: string[]): string {
   return bullets.join('\n')
 }
 
-export function EditResume() {
+type EditResumeProps = {
+  /** Return to portfolio after sign out (e.g. close full-page editor). */
+  onSignOut?: () => void
+}
+
+const MOBILE_EDIT_BREAKPOINT = '(max-width: 768px)'
+
+function useMatchMedia(query: string): boolean {
+  const [matches, setMatches] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia(query).matches : false,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia(query)
+    const onChange = () => setMatches(mq.matches)
+    onChange()
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [query])
+  return matches
+}
+
+function waitPaint(): Promise<void> {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+  })
+}
+
+export function EditResume({ onSignOut }: EditResumeProps) {
+  const { logout } = useAuth()
   const { data, setData, resetToDefault } = useResume()
   const pdfRef = useRef<HTMLDivElement>(null)
   const [pdfBusy, setPdfBusy] = useState(false)
+  const isMobileEditor = useMatchMedia(MOBILE_EDIT_BREAKPOINT)
+  const [mobileTab, setMobileTab] = useState<'edit' | 'preview'>('edit')
   const safeName = data.name.replace(/[^a-zA-Z0-9]+/g, '_') || 'Resume'
 
   const runDownload = useCallback(async () => {
+    const narrow = typeof window !== 'undefined' && window.matchMedia(MOBILE_EDIT_BREAKPOINT).matches
+    if (narrow) {
+      setMobileTab('preview')
+      await waitPaint()
+    }
     const el = document.getElementById('resume-document')
     if (!el) return
     setPdfBusy(true)
@@ -135,6 +171,16 @@ export function EditResume() {
         <div className="edit-toolbar-inner">
           <p className="edit-toolbar-hint">Edits autosave in this browser. Use **double asterisks** for bold.</p>
           <div className="edit-toolbar-actions">
+            <button
+              type="button"
+              className="btn-ghost-toolbar"
+              onClick={() => {
+                logout()
+                onSignOut?.()
+              }}
+            >
+              Sign out
+            </button>
             <button type="button" className="btn-ghost-toolbar" onClick={resetToDefault}>
               Reset to default
             </button>
@@ -150,9 +196,39 @@ export function EditResume() {
         </div>
       </motion.div>
 
+      {isMobileEditor ? (
+        <div className="edit-mobile-tabs" role="tablist" aria-label="Editor view">
+          <button
+            type="button"
+            role="tab"
+            id="edit-tab-edit"
+            aria-selected={mobileTab === 'edit'}
+            aria-controls="edit-panel-form"
+            className={mobileTab === 'edit' ? 'edit-mobile-tab is-active' : 'edit-mobile-tab'}
+            onClick={() => setMobileTab('edit')}
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="edit-tab-preview"
+            aria-selected={mobileTab === 'preview'}
+            aria-controls="edit-panel-preview"
+            className={mobileTab === 'preview' ? 'edit-mobile-tab is-active' : 'edit-mobile-tab'}
+            onClick={() => setMobileTab('preview')}
+          >
+            PDF preview
+          </button>
+        </div>
+      ) : null}
+
       <div className="edit-split" ref={pdfRef}>
         <motion.div
-          className="edit-form-col"
+          id="edit-panel-form"
+          role="tabpanel"
+          aria-labelledby="edit-tab-edit"
+          className={`edit-form-col${isMobileEditor && mobileTab !== 'edit' ? ' edit-panel-hidden-mobile' : ''}`}
           initial={{ opacity: 0, x: -16 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4 }}
@@ -400,7 +476,12 @@ export function EditResume() {
           </section>
         </motion.div>
 
-        <div className="edit-preview-col">
+        <div
+          id="edit-panel-preview"
+          role="tabpanel"
+          aria-labelledby="edit-tab-preview"
+          className={`edit-preview-col${isMobileEditor && mobileTab !== 'preview' ? ' edit-panel-hidden-mobile' : ''}`}
+        >
           <p className="preview-label">Live preview / PDF source</p>
           <div className="preview-scroll">
             <ResumeDocument data={data} id="resume-document" />

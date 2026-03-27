@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { useMemo } from 'react'
 import { useResume } from '../context/ResumeContext'
 
 const fadeUp = {
@@ -19,22 +18,20 @@ function plain(text: string): string {
   return text.replace(/\*\*/g, '').trim()
 }
 
+/** tel: href — keep digits and leading + */
+function telHref(phone: string): string {
+  const cleaned = phone.replace(/[^\d+]/g, '')
+  return cleaned ? `tel:${cleaned}` : '#'
+}
+
 const FACEBOOK_PROFILE = 'https://www.facebook.com/thebrahmindev/'
 const INSTAGRAM_PROFILE =
   'https://www.instagram.com/the_brahmin_dev?igsh=MTJqOXJrODdnY2E5Nw%3D%3D&utm_source=qr'
 
-type Props = { onEditResume: () => void }
+type Props = { onOpenResumeMenu: () => void }
 
-export function Portfolio({ onEditResume }: Props) {
+export function Portfolio({ onOpenResumeMenu }: Props) {
   const { data } = useResume()
-
-  const focusTags = useMemo(() => {
-    return data.tagline
-      .split('|')
-      .map((s) => s.trim())
-      .filter(Boolean)
-  }, [data.tagline])
-
   const summaryPlain = plain(data.summary)
 
   return (
@@ -66,33 +63,71 @@ export function Portfolio({ onEditResume }: Props) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.35, duration: 0.5 }}
           >
-            <span className="portfolio-meta-item">
-              <span className="portfolio-meta-dot" aria-hidden />
+            <span className="portfolio-meta-item portfolio-meta-with-icon">
+              <svg
+                className="portfolio-meta-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M12 21s-6-5.25-6-10a6 6 0 1 1 12 0c0 4.75-6 10-6 10Z" />
+                <circle cx="12" cy="11" r="2" />
+              </svg>
               {data.contact.location}
             </span>
-            <span className="portfolio-meta-item portfolio-meta-item--muted">{data.contact.phone}</span>
-            <span className="portfolio-pills" aria-label="Focus areas">
-              {focusTags.map((tag) => (
-                <span key={tag} className="portfolio-pill">
-                  {tag}
-                </span>
-              ))}
-            </span>
+            <a
+              className="portfolio-meta-item portfolio-meta-item--muted portfolio-meta-with-icon portfolio-meta-phone"
+              href={telHref(data.contact.phone)}
+            >
+              <svg
+                className="portfolio-meta-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+              {data.contact.phone}
+            </a>
+            <a
+              className="portfolio-meta-email portfolio-meta-with-icon"
+              href={`mailto:${data.contact.email}`}
+            >
+              <svg
+                className="portfolio-meta-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <rect width="20" height="16" x="2" y="4" rx="2" fill="none" />
+                <path d="m22 7-8.97 6.7a1.94 1.94 0 0 1-2.06 0L2 7" fill="none" />
+              </svg>
+              {data.contact.email}
+            </a>
           </motion.div>
 
           <div className="portfolio-cta-row">
             <motion.button
               type="button"
               className="btn-primary"
-              onClick={onEditResume}
+              onClick={onOpenResumeMenu}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
             >
-              Edit resume →
+              Resume →
             </motion.button>
-            <a className="btn-ghost" href={`mailto:${data.contact.email}`}>
-              Email
-            </a>
             <a
               className="btn-ghost"
               href={data.contact.linkedinUrl}
@@ -264,8 +299,8 @@ export function Portfolio({ onEditResume }: Props) {
               <a className="btn-ghost footer-btn" href={INSTAGRAM_PROFILE} target="_blank" rel="noopener noreferrer">
                 Instagram
               </a>
-              <button type="button" className="btn-ghost footer-btn" onClick={onEditResume}>
-                Tweak resume
+              <button type="button" className="btn-ghost footer-btn" onClick={onOpenResumeMenu}>
+                Resume
               </button>
             </div>
           </div>
