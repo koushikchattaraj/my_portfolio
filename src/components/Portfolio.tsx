@@ -1,18 +1,51 @@
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useResume } from '../context/ResumeContext'
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  show: (i: number) => ({
+const easePremium = [0.22, 1, 0.36, 1] as const
+
+const sectionReveal = {
+  hidden: { opacity: 0, y: 20 },
+  show: (reduced: boolean) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: 0.08 * i, duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
+    transition: reduced
+      ? { duration: 0.01 }
+      : { duration: 0.55, ease: easePremium },
   }),
 }
 
-const stagger = {
-  show: { transition: { staggerChildren: 0.06 } },
-}
+const staggerChildren = (reduced: boolean) => ({
+  hidden: {},
+  show: {
+    transition: reduced
+      ? { staggerChildren: 0 }
+      : { staggerChildren: 0.15, delayChildren: 0.08 },
+  },
+})
+
+const cardRevealItem = (reduced: boolean) => ({
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: reduced
+      ? { duration: 0.01 }
+      : { duration: 0.5, ease: easePremium },
+  },
+})
+
+const cardHover = (reduced: boolean) =>
+  reduced
+    ? {}
+    : {
+        y: -5,
+        boxShadow:
+          '0 24px 48px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(110, 231, 255, 0.22), 0 0 36px rgba(110, 231, 255, 0.08)',
+        borderColor: 'rgba(110, 231, 255, 0.35)',
+        transition: { duration: 0.25, ease: easePremium },
+      }
+
+const btnTransition = { duration: 0.26, ease: easePremium }
 
 function plain(text: string): string {
   return text.replace(/\*\*/g, '').trim()
@@ -33,35 +66,65 @@ type Props = { onOpenResumeMenu: () => void }
 export function Portfolio({ onOpenResumeMenu }: Props) {
   const { data } = useResume()
   const summaryPlain = plain(data.summary)
+  const reduced = useReducedMotion() ?? false
 
   return (
     <div className="portfolio-root">
-      <div className="portfolio-bg" aria-hidden />
-      <motion.div
-        className="portfolio-inner"
-        initial="hidden"
-        animate="show"
-        variants={stagger}
-      >
-        <motion.header className="portfolio-hero" variants={fadeUp} custom={0}>
-          <p className="portfolio-kicker">Portfolio</p>
-          <motion.h1
-            className="portfolio-name"
-            initial={{ opacity: 0, letterSpacing: '0.35em' }}
-            animate={{ opacity: 1, letterSpacing: '0.06em' }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+      <div className="portfolio-bg portfolio-bg--layered" aria-hidden />
+      <div className="portfolio-page-spotlight" aria-hidden />
+      <div className="portfolio-inner">
+        <motion.header className="portfolio-hero" initial={false}>
+          <motion.p
+            className="portfolio-kicker"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={
+              reduced
+                ? { duration: 0.01 }
+                : { delay: 0, duration: 0.6, ease: easePremium }
+            }
           >
-            {data.name}
-          </motion.h1>
-          <p className="portfolio-tag">{data.tagline}</p>
+            Portfolio
+          </motion.p>
+
+          <div className="portfolio-name-wrap">
+            <div className="portfolio-name-glow" aria-hidden />
+            <motion.h1
+              className="portfolio-name"
+              initial={{ opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={
+                reduced
+                  ? { duration: 0.01 }
+                  : { delay: 0.08, duration: 0.88, ease: easePremium }
+              }
+            >
+              {data.name}
+            </motion.h1>
+          </div>
+
+          <motion.p
+            className="portfolio-tag"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={
+              reduced
+                ? { duration: 0.01 }
+                : { delay: 0.22, duration: 0.6, ease: easePremium }
+            }
+          >
+            {data.tagline}
+          </motion.p>
 
           <motion.div
             className="portfolio-meta"
-            variants={fadeUp}
-            custom={1}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.35, duration: 0.5 }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={
+              reduced
+                ? { duration: 0.01 }
+                : { delay: 0.36, duration: 0.58, ease: easePremium }
+            }
           >
             <span className="portfolio-meta-item portfolio-meta-with-icon">
               <svg
@@ -118,39 +181,89 @@ export function Portfolio({ onOpenResumeMenu }: Props) {
             </a>
           </motion.div>
 
-          <div className="portfolio-cta-row">
+          <motion.div
+            className="portfolio-cta-row"
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={
+              reduced
+                ? { duration: 0.01 }
+                : { delay: 0.5, duration: 0.55, ease: easePremium }
+            }
+          >
             <motion.button
               type="button"
-              className="btn-primary"
+              className="btn-primary btn-premium"
               onClick={onOpenResumeMenu}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={reduced ? {} : { scale: 1.05 }}
+              whileTap={reduced ? {} : { scale: 0.98 }}
+              transition={btnTransition}
             >
               Resume →
             </motion.button>
-            <a
-              className="btn-ghost"
+            <motion.a
+              className="btn-ghost btn-premium-ghost"
               href={data.contact.linkedinUrl}
               target="_blank"
               rel="noopener noreferrer"
+              whileHover={reduced ? {} : { scale: 1.05 }}
+              whileTap={reduced ? {} : { scale: 0.98 }}
+              transition={btnTransition}
             >
               LinkedIn
-            </a>
-            <a className="btn-ghost" href={FACEBOOK_PROFILE} target="_blank" rel="noopener noreferrer">
+            </motion.a>
+            <motion.a
+              className="btn-ghost btn-premium-ghost"
+              href={FACEBOOK_PROFILE}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={reduced ? {} : { scale: 1.05 }}
+              whileTap={reduced ? {} : { scale: 0.98 }}
+              transition={btnTransition}
+            >
               Facebook
-            </a>
-            <a className="btn-ghost" href={INSTAGRAM_PROFILE} target="_blank" rel="noopener noreferrer">
+            </motion.a>
+            <motion.a
+              className="btn-ghost btn-premium-ghost"
+              href={INSTAGRAM_PROFILE}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={reduced ? {} : { scale: 1.05 }}
+              whileTap={reduced ? {} : { scale: 0.98 }}
+              transition={btnTransition}
+            >
               Instagram
-            </a>
-          </div>
+            </motion.a>
+          </motion.div>
         </motion.header>
 
-        <motion.section className="portfolio-panel portfolio-panel--accent" variants={fadeUp} custom={2}>
+        <motion.section
+          className="portfolio-panel portfolio-panel--accent glass-panel"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-60px' }}
+          variants={{
+            hidden: sectionReveal.hidden,
+            show: sectionReveal.show(reduced),
+          }}
+          whileHover={cardHover(reduced)}
+          style={{
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'rgba(255, 255, 255, 0.12)',
+          }}
+        >
           <h2 className="portfolio-h2">About</h2>
           <p className="portfolio-lead portfolio-lead--full">{summaryPlain}</p>
         </motion.section>
 
-        <motion.section className="portfolio-metrics" variants={fadeUp} custom={3}>
+        <motion.section
+          className="portfolio-metrics"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-50px' }}
+          variants={staggerChildren(reduced)}
+        >
           {[
             { label: 'Roles profiled', value: String(data.experience.length) },
             { label: 'Case studies', value: String(data.projects.length) },
@@ -159,50 +272,90 @@ export function Portfolio({ onOpenResumeMenu }: Props) {
               label: 'Base',
               value: data.contact.location.split(',')[0]?.trim() || data.contact.location,
             },
-          ].map((m, i) => (
+          ].map((m) => (
             <motion.div
               key={m.label}
-              className="metric-tile"
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-30px' }}
-              transition={{ delay: i * 0.06, duration: 0.45 }}
+              className="metric-tile glass-metric"
+              variants={cardRevealItem(reduced)}
+              whileHover={cardHover(reduced)}
+              style={{
+                borderWidth: 1,
+                borderStyle: 'solid',
+                borderColor: 'rgba(255, 255, 255, 0.08)',
+              }}
             >
-              <span className="metric-value">{m.value}</span>
+              <span
+                className={
+                  m.label === 'Base' ? 'metric-value metric-value--place' : 'metric-value'
+                }
+              >
+                {m.value}
+              </span>
               <span className="metric-label">{m.label}</span>
             </motion.div>
           ))}
         </motion.section>
 
-        <motion.section variants={fadeUp} custom={4}>
+        <motion.section
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-50px' }}
+          variants={{
+            hidden: sectionReveal.hidden,
+            show: sectionReveal.show(reduced),
+          }}
+        >
           <h2 className="portfolio-section-title">Technical footprint</h2>
-          <div className="portfolio-grid portfolio-grid--all">
-            {data.skills.map((row, i) => (
+          <motion.div
+            className="portfolio-grid portfolio-grid--all"
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-40px' }}
+            variants={staggerChildren(reduced)}
+          >
+            {data.skills.map((row) => (
               <motion.article
                 key={row.label}
-                className="skill-card"
-                variants={fadeUp}
-                custom={i}
-                whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                className="skill-card glass-card"
+                variants={cardRevealItem(reduced)}
+                whileHover={cardHover(reduced)}
+                style={{
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  borderColor: 'rgba(255, 255, 255, 0.1)',
+                }}
               >
                 <span className="skill-card-label">{row.label}</span>
                 <p className="skill-card-value">{row.value}</p>
               </motion.article>
             ))}
-          </div>
+          </motion.div>
         </motion.section>
 
-        <motion.section className="portfolio-timeline-wrap" variants={fadeUp} custom={5}>
+        <motion.section
+          className="portfolio-timeline-wrap"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-50px' }}
+          variants={{
+            hidden: sectionReveal.hidden,
+            show: sectionReveal.show(reduced),
+          }}
+        >
           <h2 className="portfolio-section-title">Experience</h2>
           <ul className="portfolio-timeline">
             {data.experience.map((exp, i) => (
               <motion.li
                 key={exp.id}
-                className="timeline-item"
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                className="timeline-item timeline-item--glass"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
+                transition={
+                  reduced
+                    ? { duration: 0.01 }
+                    : { delay: i * 0.12, duration: 0.52, ease: easePremium }
+                }
               >
                 <div className="timeline-dot" aria-hidden />
                 <div className="timeline-body">
@@ -222,7 +375,16 @@ export function Portfolio({ onOpenResumeMenu }: Props) {
           </ul>
         </motion.section>
 
-        <motion.section className="portfolio-projects" variants={fadeUp} custom={6}>
+        <motion.section
+          className="portfolio-projects"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-50px' }}
+          variants={{
+            hidden: sectionReveal.hidden,
+            show: sectionReveal.show(reduced),
+          }}
+        >
           <h2 className="portfolio-section-title">Selected work</h2>
           <p className="portfolio-section-intro">
             Product-facing builds across support, HR, and marketing analytics — from component libraries to perf
@@ -232,11 +394,21 @@ export function Portfolio({ onOpenResumeMenu }: Props) {
             {data.projects.map((p, i) => (
               <motion.div
                 key={p.id}
-                className="project-card"
-                initial={{ opacity: 0, x: -24 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                className="project-card glass-card"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
+                transition={
+                  reduced
+                    ? { duration: 0.01 }
+                    : { delay: i * 0.14, duration: 0.52, ease: easePremium }
+                }
+                whileHover={cardHover(reduced)}
+                style={{
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  borderColor: 'rgba(255, 255, 255, 0.1)',
+                }}
               >
                 <h3>{p.title}</h3>
                 <p>{p.description}</p>
@@ -250,8 +422,23 @@ export function Portfolio({ onOpenResumeMenu }: Props) {
           </div>
         </motion.section>
 
-        <motion.section className="portfolio-edu grid-two" variants={fadeUp} custom={7}>
-          <div className="portfolio-panel portfolio-panel--compact">
+        <motion.section
+          className="portfolio-edu grid-two"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-50px' }}
+          variants={staggerChildren(reduced)}
+        >
+          <motion.div
+            className="portfolio-panel portfolio-panel--compact glass-panel"
+            variants={cardRevealItem(reduced)}
+            whileHover={cardHover(reduced)}
+            style={{
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: 'rgba(255, 255, 255, 0.12)',
+            }}
+          >
             <h2 className="portfolio-h2">Education</h2>
             <ul className="edu-list">
               {data.education.map((line, i) => (
@@ -261,25 +448,40 @@ export function Portfolio({ onOpenResumeMenu }: Props) {
                 </li>
               ))}
             </ul>
-          </div>
-          <div className="portfolio-panel portfolio-panel--compact">
+          </motion.div>
+          <motion.div
+            className="portfolio-panel portfolio-panel--compact glass-panel"
+            variants={cardRevealItem(reduced)}
+            whileHover={cardHover(reduced)}
+            style={{
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: 'rgba(255, 255, 255, 0.12)',
+            }}
+          >
             <h2 className="portfolio-h2">Certifications</h2>
             <ul className="cert-list">
               {data.certifications.map((c, i) => (
                 <li key={i}>{plain(c)}</li>
               ))}
             </ul>
-          </div>
+          </motion.div>
         </motion.section>
 
         <motion.footer
-          className="portfolio-footer-cta"
-          variants={fadeUp}
-          custom={8}
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.55 }}
+          className="portfolio-footer-cta glass-panel"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={
+            reduced ? { duration: 0.01 } : { duration: 0.55, ease: easePremium }
+          }
+          whileHover={cardHover(reduced)}
+          style={{
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'rgba(255, 255, 255, 0.12)',
+          }}
         >
           <div className="portfolio-footer-inner">
             <div>
@@ -290,22 +492,51 @@ export function Portfolio({ onOpenResumeMenu }: Props) {
               </p>
             </div>
             <div className="portfolio-footer-actions">
-              <a className="btn-primary footer-btn" href={`mailto:${data.contact.email}`}>
+              <motion.a
+                className="btn-primary footer-btn btn-premium"
+                href={`mailto:${data.contact.email}`}
+                whileHover={reduced ? {} : { scale: 1.05 }}
+                whileTap={reduced ? {} : { scale: 0.98 }}
+                transition={btnTransition}
+              >
                 Say hello
-              </a>
-              <a className="btn-ghost footer-btn" href={FACEBOOK_PROFILE} target="_blank" rel="noopener noreferrer">
+              </motion.a>
+              <motion.a
+                className="btn-ghost footer-btn btn-premium-ghost"
+                href={FACEBOOK_PROFILE}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={reduced ? {} : { scale: 1.05 }}
+                whileTap={reduced ? {} : { scale: 0.98 }}
+                transition={btnTransition}
+              >
                 Facebook
-              </a>
-              <a className="btn-ghost footer-btn" href={INSTAGRAM_PROFILE} target="_blank" rel="noopener noreferrer">
+              </motion.a>
+              <motion.a
+                className="btn-ghost footer-btn btn-premium-ghost"
+                href={INSTAGRAM_PROFILE}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={reduced ? {} : { scale: 1.05 }}
+                whileTap={reduced ? {} : { scale: 0.98 }}
+                transition={btnTransition}
+              >
                 Instagram
-              </a>
-              <button type="button" className="btn-ghost footer-btn" onClick={onOpenResumeMenu}>
+              </motion.a>
+              <motion.button
+                type="button"
+                className="btn-ghost footer-btn btn-premium-ghost"
+                onClick={onOpenResumeMenu}
+                whileHover={reduced ? {} : { scale: 1.05 }}
+                whileTap={reduced ? {} : { scale: 0.98 }}
+                transition={btnTransition}
+              >
                 Resume
-              </button>
+              </motion.button>
             </div>
           </div>
         </motion.footer>
-      </motion.div>
+      </div>
     </div>
   )
 }

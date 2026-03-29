@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import './App.css'
+import { DoorIntro } from './components/DoorIntro'
 import { EditResume } from './components/EditResume'
 import { LoginModal } from './components/LoginModal'
 import { Portfolio } from './components/Portfolio'
@@ -20,6 +21,28 @@ export default function App() {
   const [resumeMenuOpen, setResumeMenuOpen] = useState(false)
   const [viewResumeOpen, setViewResumeOpen] = useState(false)
   const [loginModalOpen, setLoginModalOpen] = useState(false)
+  const [doorIntroDone, setDoorIntroDone] = useState(false)
+  const shellRef = useRef<HTMLDivElement>(null)
+
+  const finishDoorIntro = useCallback(() => {
+    setDoorIntroDone(true)
+  }, [])
+
+  const onShellPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    const el = shellRef.current
+    if (!el) return
+    const w = window.innerWidth || 1
+    const h = window.innerHeight || 1
+    el.style.setProperty('--cursor-glow-x', `${(e.clientX / w) * 100}%`)
+    el.style.setProperty('--cursor-glow-y', `${(e.clientY / h) * 100}%`)
+  }, [])
+
+  const onShellPointerLeave = useCallback(() => {
+    const el = shellRef.current
+    if (!el) return
+    el.style.setProperty('--cursor-glow-x', '50%')
+    el.style.setProperty('--cursor-glow-y', '38%')
+  }, [])
 
   const safeName = data.name.replace(/[^a-zA-Z0-9]+/g, '_') || 'Resume'
 
@@ -41,7 +64,12 @@ export default function App() {
   }, [])
 
   return (
-    <div className="app-shell">
+    <div
+      ref={shellRef}
+      className="app-shell"
+      onPointerMove={onShellPointerMove}
+      onPointerLeave={onShellPointerLeave}
+    >
       <div className="pdf-source-hidden" aria-hidden>
         <ResumeDocument data={data} id="resume-document-pdf-source" />
       </div>
@@ -130,6 +158,8 @@ export default function App() {
       <ViewResumeModal open={viewResumeOpen} data={data} onClose={() => setViewResumeOpen(false)} />
 
       <LoginModal open={loginModalOpen} onClose={closeLoginModal} />
+
+      {!doorIntroDone ? <DoorIntro onComplete={finishDoorIntro} /> : null}
     </div>
   )
 }

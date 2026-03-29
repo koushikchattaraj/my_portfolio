@@ -1,4 +1,7 @@
 .app-shell {
+  --cursor-glow-x: 50%;
+  --cursor-glow-y: 38%;
+  position: relative;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -13,7 +16,14 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.85rem 1.5rem;
-  background: rgba(7, 7, 15, 0.85);
+  background:
+    radial-gradient(
+      900px circle at var(--cursor-glow-x, 50%) var(--cursor-glow-y, 38%),
+      rgba(110, 231, 255, 0.11) 0%,
+      rgba(167, 139, 250, 0.05) 24%,
+      transparent 48%
+    ),
+    rgba(7, 7, 15, 0.85);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
 }
@@ -88,6 +98,18 @@
   padding: 0.55rem 1.1rem;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
+  transition:
+    color 0.2s,
+    background 0.2s,
+    border-color 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-tab--solo:hover:not(.active) {
+  transform: scale(1.04);
+  box-shadow: 0 0 22px rgba(110, 231, 255, 0.14);
+  border-color: rgba(110, 231, 255, 0.28);
 }
 
 .nav-tab--solo.nav-tab--outline {
@@ -112,42 +134,266 @@
   min-height: calc(100vh - 64px);
 }
 
+/* ——— Door intro (every full reload) ——— */
+/* Transparent shell; clicks go through to the site — doors/seam are visual-only. Skip stays clickable. */
+.door-intro-root {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  pointer-events: none;
+  overflow: hidden;
+  background: transparent;
+}
+
+.door-intro-stage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.door-intro-perspective {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  pointer-events: none;
+  perspective: 2000px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+}
+
+.door-intro-panel {
+  position: relative;
+  flex: 1 1 50%;
+  width: 50%;
+  max-width: 50%;
+  height: 100%;
+  pointer-events: none;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: linear-gradient(145deg, #0a1524 0%, #060910 48%, #0c1a2e 100%);
+  box-shadow:
+    inset 0 0 min(12vw, 120px) rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  will-change: transform;
+}
+
+.door-intro-panel--left {
+  transform-origin: left center;
+  border-right: 1px solid rgba(110, 231, 255, 0.2);
+  box-shadow:
+    inset 0 0 min(12vw, 120px) rgba(0, 0, 0, 0.5),
+    inset -12px 0 40px rgba(110, 231, 255, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.door-intro-panel--right {
+  transform-origin: right center;
+  border-left: 1px solid rgba(110, 231, 255, 0.2);
+  box-shadow:
+    inset 0 0 min(12vw, 120px) rgba(0, 0, 0, 0.5),
+    inset 12px 0 40px rgba(167, 139, 250, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Center seam splits into two glow lines that travel with the opening doors */
+.door-intro-seam-wrap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.door-intro-seam-half {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(
+    180deg,
+    transparent 5%,
+    rgba(110, 231, 255, 0.45) 35%,
+    rgba(110, 231, 255, 0.72) 50%,
+    rgba(167, 139, 250, 0.4) 65%,
+    transparent 95%
+  );
+  will-change: transform, opacity;
+}
+
+.door-intro-seam-half--left {
+  right: 50%;
+  margin-right: 0;
+  transform-origin: right center;
+  box-shadow: -6px 0 24px rgba(110, 231, 255, 0.35);
+}
+
+.door-intro-seam-half--right {
+  left: 50%;
+  margin-left: 0;
+  transform-origin: left center;
+  box-shadow: 6px 0 24px rgba(110, 231, 255, 0.35);
+}
+
+.door-intro-skip {
+  position: absolute;
+  bottom: 1.35rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  pointer-events: auto;
+  padding: 0.5rem 1.15rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(8, 12, 22, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #989fb0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.door-intro-skip:hover {
+  color: #e8eaf0;
+  border-color: rgba(110, 231, 255, 0.32);
+}
+
+.door-intro-skip:focus-visible {
+  outline: 2px solid #6ee7ff;
+  outline-offset: 3px;
+}
+
 /* ——— Portfolio ——— */
 .portfolio-root {
   position: relative;
   overflow: hidden;
   min-height: calc(100vh - 64px);
   padding: 2.5rem 1.5rem 4rem;
+  background: linear-gradient(168deg, #0c1929 0%, #060910 42%, #000000 100%);
 }
 
 .portfolio-bg {
+  z-index: 0;
   position: absolute;
   inset: -40% -20%;
   background:
-    radial-gradient(ellipse 50% 40% at 20% 20%, rgba(110, 231, 255, 0.18), transparent 55%),
-    radial-gradient(ellipse 45% 35% at 85% 30%, rgba(167, 139, 250, 0.2), transparent 50%),
-    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(52, 211, 153, 0.08), transparent 45%);
+    radial-gradient(ellipse 70% 45% at 50% -5%, rgba(30, 64, 110, 0.35), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 20% 20%, rgba(110, 231, 255, 0.14), transparent 55%),
+    radial-gradient(ellipse 45% 35% at 85% 30%, rgba(167, 139, 250, 0.16), transparent 50%),
+    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(52, 211, 153, 0.06), transparent 45%);
   pointer-events: none;
   animation: drift 18s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.portfolio-bg--layered::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 100% 80% at 50% 50%,
+    rgba(110, 231, 255, 0.04) 0%,
+    transparent 55%
+  );
+  animation: ambientPulse 14s ease-in-out infinite alternate;
+  pointer-events: none;
 }
 
 @keyframes drift {
   from {
-    transform: translate(-2%, -1%) rotate(0deg);
+    transform: translate3d(-2%, -1%, 0) rotate(0deg);
   }
   to {
-    transform: translate(2%, 3%) rotate(2deg);
+    transform: translate3d(2%, 3%, 0) rotate(2deg);
   }
+}
+
+@keyframes ambientPulse {
+  from {
+    opacity: 0.45;
+    transform: scale3d(1, 1, 1);
+  }
+  to {
+    opacity: 0.85;
+    transform: scale3d(1.06, 1.04, 1);
+  }
+}
+
+.portfolio-page-spotlight {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    900px circle at var(--cursor-glow-x, 50%) var(--cursor-glow-y, 38%),
+    rgba(110, 231, 255, 0.1) 0%,
+    rgba(167, 139, 250, 0.045) 26%,
+    transparent 52%
+  );
+  opacity: 0.9;
+  will-change: opacity;
 }
 
 .portfolio-inner {
   position: relative;
+  z-index: 2;
   max-width: 1100px;
   margin: 0 auto;
 }
 
 .portfolio-hero {
+  position: relative;
   margin-bottom: 2.5rem;
+  padding: 1.25rem 0 0.25rem;
+}
+
+.portfolio-name-wrap {
+  position: relative;
+  display: block;
+  margin: 0 0 0.75rem;
+}
+
+.portfolio-name-glow {
+  position: absolute;
+  left: -8%;
+  right: -8%;
+  top: -35%;
+  bottom: -35%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(110, 231, 255, 0.2) 35%,
+    rgba(167, 139, 250, 0.16) 55%,
+    transparent 100%
+  );
+  background-size: 220% 100%;
+  filter: blur(42px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
+  animation: nameGlowSweep 16s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes nameGlowSweep {
+  0% {
+    transform: translate3d(-6%, 0, 0);
+    opacity: 0.45;
+  }
+  100% {
+    transform: translate3d(6%, 0, 0);
+    opacity: 0.7;
+  }
+}
+
+.portfolio-name-wrap .portfolio-name {
+  margin: 0;
 }
 
 .portfolio-kicker {
@@ -159,11 +405,16 @@
   margin: 0 0 0.75rem;
 }
 
+/* Hero name: Chakra Petch — tech / HUD energy, distinct from body & Syne headings */
 .portfolio-name {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: clamp(2.4rem, 6vw, 4rem);
-  line-height: 1.05;
+  position: relative;
+  z-index: 1;
+  font-family: 'Chakra Petch', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.55rem, 6.4vw, 4rem);
+  line-height: 1.08;
+  letter-spacing: 0.02em;
+  text-transform: none;
   margin: 0 0 0.75rem;
   background: linear-gradient(95deg, #fff 0%, #dbeafe 45%, var(--accent) 100%);
   -webkit-background-clip: text;
@@ -275,6 +526,19 @@
   box-shadow: 0 8px 32px rgba(110, 231, 255, 0.25);
 }
 
+.btn-premium {
+  transition:
+    box-shadow 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.btn-premium:hover {
+  box-shadow:
+    0 10px 40px rgba(110, 231, 255, 0.42),
+    0 0 28px rgba(167, 139, 250, 0.25);
+  filter: brightness(1.03);
+}
+
 .btn-ghost {
   display: inline-flex;
   align-items: center;
@@ -287,13 +551,21 @@
   color: var(--text);
   background: rgba(255, 255, 255, 0.03);
   transition:
-    border-color 0.2s,
-    background 0.2s;
+    border-color 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.26s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .btn-ghost:hover {
   border-color: var(--accent-dim);
   background: rgba(110, 231, 255, 0.06);
+}
+
+.btn-premium-ghost:hover {
+  box-shadow:
+    0 0 24px rgba(110, 231, 255, 0.22),
+    0 0 48px rgba(110, 231, 255, 0.08);
+  border-color: rgba(110, 231, 255, 0.35);
 }
 
 .portfolio-panel {
@@ -305,13 +577,44 @@
   backdrop-filter: blur(12px);
 }
 
+.glass-panel {
+  background: rgba(12, 20, 36, 0.42);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.28);
+}
+
 .portfolio-panel--accent {
   border-color: rgba(110, 231, 255, 0.22);
   background: linear-gradient(
     145deg,
-    rgba(15, 17, 28, 0.75) 0%,
-    rgba(110, 231, 255, 0.06) 100%
+    rgba(12, 20, 36, 0.5) 0%,
+    rgba(110, 231, 255, 0.07) 100%
   );
+}
+
+.portfolio-panel--accent.glass-panel {
+  background: linear-gradient(
+    145deg,
+    rgba(12, 20, 36, 0.48) 0%,
+    rgba(110, 231, 255, 0.08) 100%
+  );
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-bg,
+  .portfolio-bg--layered::after,
+  .portfolio-name-glow {
+    animation: none;
+  }
+
+  .portfolio-name-glow {
+    opacity: 0.5;
+    transform: none;
+  }
 }
 
 .portfolio-panel--compact {
@@ -338,28 +641,49 @@
 
 .portfolio-metrics {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
   gap: 0.85rem;
   margin-bottom: 2.25rem;
 }
 
 .metric-tile {
+  min-width: 0;
   padding: 1rem 1rem 1.1rem;
   border-radius: 14px;
   border: 1px solid var(--border);
   background: rgba(8, 10, 20, 0.6);
 }
 
+.glass-metric {
+  background: rgba(6, 12, 24, 0.5);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.22);
+  will-change: transform;
+}
+
 .metric-value {
   display: block;
+  max-width: 100%;
   font-family: 'Syne', sans-serif;
   font-weight: 800;
-  font-size: 1.45rem;
+  font-size: clamp(1.05rem, 3.8vw + 0.6rem, 1.45rem);
   letter-spacing: -0.02em;
+  line-height: 1.2;
+  overflow-wrap: break-word;
+  word-break: normal;
   background: linear-gradient(90deg, #fff, var(--accent));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* City / place name: one line, slightly smaller so it fits narrow grid cells */
+.metric-value--place {
+  font-size: clamp(0.76rem, 2.55vw + 0.45rem, 1.08rem);
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+  overflow-wrap: normal;
 }
 
 .metric-label {
@@ -421,6 +745,28 @@
   position: relative;
   padding-left: 2rem;
   margin-bottom: 1.35rem;
+}
+
+.timeline-item--glass .timeline-body {
+  padding: 1rem 1.1rem 1.05rem;
+  border-radius: 14px;
+  background: rgba(8, 14, 28, 0.42);
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.2);
+  transition:
+    border-color 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.timeline-item--glass:hover .timeline-body {
+  border-color: rgba(110, 231, 255, 0.25);
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(110, 231, 255, 0.12);
+  transform: translateY(-3px);
 }
 
 .timeline-item:last-child {
@@ -550,6 +896,10 @@
   background: rgba(10, 12, 22, 0.85);
 }
 
+.portfolio-footer-cta.glass-panel {
+  background: rgba(8, 14, 26, 0.52);
+}
+
 .portfolio-footer-inner {
   display: flex;
   flex-wrap: wrap;
@@ -592,8 +942,20 @@ button.footer-btn.btn-ghost {
 .skill-card {
   padding: 1.1rem 1rem;
   border-radius: 14px;
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.07),
+    rgba(255, 255, 255, 0.02)
+  );
   border: 1px solid var(--border);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+  will-change: transform;
+}
+
+.glass-card {
+  background: rgba(8, 14, 28, 0.48);
 }
 
 .skill-card-label {
@@ -613,6 +975,10 @@ button.footer-btn.btn-ghost {
   line-height: 1.55;
 }
 
+.portfolio-projects {
+  margin-bottom: 2.5rem;
+}
+
 .portfolio-projects .portfolio-h2 {
   margin-bottom: 1rem;
 }
@@ -628,6 +994,9 @@ button.footer-btn.btn-ghost {
   border-radius: 14px;
   border: 1px solid var(--border);
   background: rgba(10, 12, 22, 0.8);
+  backdrop-filter: blur(14px) saturate(125%);
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+  will-change: transform;
 }
 
 .project-card h3 {
