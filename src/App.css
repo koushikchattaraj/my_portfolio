@@ -800,13 +800,16 @@ button.footer-btn.btn-ghost {
   max-width: calc(210mm + 32px);
 }
 
+/* 794px = 210mm at 96dpi; use px so mobile matches desktop (mm varies by device). */
 .pdf-source-hidden {
   position: fixed;
   left: -120vw;
   top: 0;
-  width: 210mm;
-  max-height: 100vh;
-  overflow: hidden;
+  width: 794px;
+  max-width: 794px;
+  min-width: 794px;
+  max-height: none;
+  overflow: visible;
   pointer-events: none;
   opacity: 0;
   z-index: -10;

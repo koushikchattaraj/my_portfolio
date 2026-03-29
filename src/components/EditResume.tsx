@@ -39,12 +39,6 @@ function useMatchMedia(query: string): boolean {
   return matches
 }
 
-function waitPaint(): Promise<void> {
-  return new Promise((resolve) => {
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
-  })
-}
-
 export function EditResume({ onSignOut }: EditResumeProps) {
   const { logout } = useAuth()
   const { data, setData, resetToDefault } = useResume()
@@ -55,12 +49,9 @@ export function EditResume({ onSignOut }: EditResumeProps) {
   const safeName = data.name.replace(/[^a-zA-Z0-9]+/g, '_') || 'Resume'
 
   const runDownload = useCallback(async () => {
-    const narrow = typeof window !== 'undefined' && window.matchMedia(MOBILE_EDIT_BREAKPOINT).matches
-    if (narrow) {
-      setMobileTab('preview')
-      await waitPaint()
-    }
-    const el = document.getElementById('resume-document')
+    // Same A4-width source as the portfolio menu (App). Preview uses fluid width on
+    // mobile; capturing that reflows into a tall layout → multi-page PDFs.
+    const el = document.getElementById('resume-document-pdf-source')
     if (!el) return
     setPdfBusy(true)
     try {

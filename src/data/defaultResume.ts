@@ -1,6 +1,7 @@
 import type { ResumeData } from "../types/resume";
+import { newId } from "../utils/id";
 
-const uid = () => crypto.randomUUID();
+const uid = () => newId();
 
 export const defaultResume: ResumeData = {
   name: "Koushik Chattaraj",
