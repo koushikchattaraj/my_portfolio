@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="83" viewBox="0 0 48 83">
+  <defs>
+    <pattern id="hexDoor" width="48" height="83" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke-linejoin="round">
+        <path
+          fill="rgba(110, 231, 255, 0.06)"
+          stroke="#6ee7ff"
+          stroke-width="0.9"
+          stroke-opacity="0.42"
+          d="M24 1 44.5 13.5v28L24 54 3.5 41.5v-28Z"
+        />
+        <path
+          fill="rgba(167, 139, 250, 0.05)"
+          stroke="#a78bfa"
+          stroke-width="0.8"
+          stroke-opacity="0.34"
+          d="M24 30 44.5 42.5v28L24 83 3.5 70.5v-28Z"
+        />
+        <path
+          fill="rgba(110, 231, 255, 0.045)"
+          stroke="#c4b5fd"
+          stroke-width="0.7"
+          stroke-opacity="0.28"
+          d="M48 16 68.5 28.5v28L48 69 27.5 56.5v-28Z"
+        />
+        <path
+          fill="rgba(167, 139, 250, 0.038)"
+          stroke="#6ee7ff"
+          stroke-width="0.65"
+          stroke-opacity="0.24"
+          d="M48 46 68.5 58.5v23L48 82 27.5 71.5v-23Z"
+        />
+      </g>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#hexDoor)" />
+</svg>

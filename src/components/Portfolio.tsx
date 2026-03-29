@@ -74,19 +74,6 @@ export function Portfolio({ onOpenResumeMenu }: Props) {
       <div className="portfolio-page-spotlight" aria-hidden />
       <div className="portfolio-inner">
         <motion.header className="portfolio-hero" initial={false}>
-          <motion.p
-            className="portfolio-kicker"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={
-              reduced
-                ? { duration: 0.01 }
-                : { delay: 0, duration: 0.6, ease: easePremium }
-            }
-          >
-            Portfolio
-          </motion.p>
-
           <div className="portfolio-name-wrap">
             <div className="portfolio-name-glow" aria-hidden />
             <motion.h1
@@ -96,7 +83,7 @@ export function Portfolio({ onOpenResumeMenu }: Props) {
               transition={
                 reduced
                   ? { duration: 0.01 }
-                  : { delay: 0.08, duration: 0.88, ease: easePremium }
+                  : { duration: 0.88, ease: easePremium }
               }
             >
               {data.name}
@@ -110,7 +97,7 @@ export function Portfolio({ onOpenResumeMenu }: Props) {
             transition={
               reduced
                 ? { duration: 0.01 }
-                : { delay: 0.22, duration: 0.6, ease: easePremium }
+                : { delay: 0.14, duration: 0.6, ease: easePremium }
             }
           >
             {data.tagline}
@@ -123,7 +110,7 @@ export function Portfolio({ onOpenResumeMenu }: Props) {
             transition={
               reduced
                 ? { duration: 0.01 }
-                : { delay: 0.36, duration: 0.58, ease: easePremium }
+                : { delay: 0.28, duration: 0.58, ease: easePremium }
             }
           >
             <span className="portfolio-meta-item portfolio-meta-with-icon">
@@ -188,7 +175,7 @@ export function Portfolio({ onOpenResumeMenu }: Props) {
             transition={
               reduced
                 ? { duration: 0.01 }
-                : { delay: 0.5, duration: 0.55, ease: easePremium }
+                : { delay: 0.42, duration: 0.55, ease: easePremium }
             }
           >
             <motion.button

@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { useCallback, useEffect, useRef } from 'react'
+import siteLogo from '../assets/logo.png'
 
 type Props = { onComplete: () => void }
 
@@ -46,8 +47,22 @@ export function DoorIntro({ onComplete }: Props) {
   const totalMs =
     Math.max(doorSwingDuration, fadeStartDelay + fadeOutDuration) * 1000 + 80
 
+  const logoTotal = fadeStartDelay + fadeOutDuration
+
   return (
     <div className="door-intro-root">
+      <motion.div
+        className="door-intro-frost"
+        aria-hidden
+        initial={{ opacity: 1 }}
+        animate={{ opacity: [1, 1, 1, 0] }}
+        transition={{
+          duration: logoTotal,
+          times: [0, 0.16, 0.58, 1],
+          ease: easeDoor,
+        }}
+      />
+
       <div className="door-intro-stage" aria-hidden="true">
         <div className="door-intro-seam-wrap" aria-hidden>
           <motion.div
@@ -83,6 +98,25 @@ export function DoorIntro({ onComplete }: Props) {
             onAnimationComplete={() => finish()}
           />
         </div>
+      </div>
+
+      <div className="door-intro-logo-wrap" aria-hidden="true">
+        <motion.img
+          src={siteLogo}
+          alt=""
+          className="door-intro-logo"
+          draggable={false}
+          initial={{ opacity: 0, scale: 0.62 }}
+          animate={{
+            opacity: [0, 1, 1, 0],
+            scale: [0.62, 1, 1.05, 0.86],
+          }}
+          transition={{
+            duration: logoTotal,
+            times: [0, 0.16, 0.58, 1],
+            ease: easeDoor,
+          }}
+        />
       </div>
 
       <motion.button

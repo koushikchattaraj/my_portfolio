@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useRef, useState } from 'react'
+import siteLogo from './assets/logo.png'
 import './App.css'
 import { DoorIntro } from './components/DoorIntro'
 import { EditResume } from './components/EditResume'
@@ -81,8 +82,14 @@ export default function App() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <span className="app-brand-mark" aria-hidden />
-          KC
+          <img
+            src={siteLogo}
+            alt={data.name}
+            className="app-brand-logo"
+            width={36}
+            height={36}
+            decoding="async"
+          />
         </motion.div>
         <div className="app-nav-actions">
           <button
